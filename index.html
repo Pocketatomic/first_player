@@ -49,23 +49,33 @@
     </div>
 
     <script>
-        // EDIT THESE NAMES FOR YOUR PLAYERS
-        const players = ["Player A", "Player B", "Player C", "Player D", "Player E"];
+        // === CONFIGURATION ===
+        // Edit player names here:
+        const players = ["Andrew", "Nick", "Chris", "Tom", "Adrian"];
         
+        // Adjust how long it shuffles (in milliseconds). 
+        // 1000 = 1 second, 3000 = 3 seconds, etc.
+        const rollDuration = 8000; 
+        
+        // Adjust the speed of the face-swapping (in milliseconds).
+        // 50 = ultra fast blur, 100 = standard shuffle, 200 = slower cycle.
+        const shuffleSpeed = 200;
+        // =====================
+
         const display = document.getElementById('display');
 
         function pickPlayer() {
-            let counter = 0;
-            const totalShuffles = 12;
+            let elapsed = 0;
             
             // Rapid shuffling loop animation
             const interval = setInterval(() => {
                 const randomVisual = players[Math.floor(Math.random() * players.length)];
                 display.innerText = randomVisual;
                 display.style.color = "#ffbb00"; // Rolling color
-                counter++;
                 
-                if (counter > totalShuffles) {
+                elapsed += shuffleSpeed;
+                
+                if (elapsed >= rollDuration) {
                     clearInterval(interval);
                     
                     // Final winner generation
@@ -73,7 +83,7 @@
                     display.innerText = winner;
                     display.style.color = "#00ff88"; // Winner highlight color
                 }
-            }, 100);
+            }, shuffleSpeed);
         }
 
         // Run instantly when the webpage finishes loading from the NFC scan
