@@ -36,33 +36,16 @@
             font-weight: bold;
             height: 60px;
             line-height: 60px;
-            margin: 30px 0;
+            margin-top: 20px;
             color: #00ff88;
-        }
-        .spin-btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #1a1a1a;
-            background-color: #00ff88;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        .spin-btn:active {
-            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
 
-    <!-- AUDIO ELEMENTS (Uses low-latency synthesizer beeps to bypass heavy MP3 loading) -->
     <div class="container">
         <h1>First Player Is...</h1>
-        <div class="result-box" id="display">Tap to Spin</div>
-        <button class="spin-btn" id="actionBtn" onclick="pickPlayer()">🎲 Start Game</button>
+        <div class="result-box" id="display">...</div>
     </div>
 
     <script>
@@ -70,33 +53,8 @@
         const players = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5"];
         
         const display = document.getElementById('display');
-        const button = document.getElementById('actionBtn');
-        
-        // Web Audio API setup to generate game sounds without needing file hosting
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playBeep(frequency, duration, type = 'sine') {
-            try {
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {
-                console.log("Audio play blocked or unsupported");
-            }
-        }
 
         function pickPlayer() {
-            button.innerText = "🎲 Spin Again";
             let counter = 0;
             const totalShuffles = 12;
             
@@ -105,9 +63,6 @@
                 const randomVisual = players[Math.floor(Math.random() * players.length)];
                 display.innerText = randomVisual;
                 display.style.color = "#ffbb00"; // Rolling color
-                
-                // Play rolling sound click
-                playBeep(150 + (counter * 20), 0.05, 'triangle');
                 counter++;
                 
                 if (counter > totalShuffles) {
@@ -116,20 +71,14 @@
                     // Final winner generation
                     const winner = players[Math.floor(Math.random() * players.length)];
                     display.innerText = winner;
-                    display.style.color = "#00ff88"; // Winner highlight colour
-                    
-                    // Play winning chime melody
-                    setTimeout(() => playBeep(523.25, 0.15), 0);     // C5 note
-                    setTimeout(() => playBeep(659.25, 0.15), 100);   // E5 note
-                    setTimeout(() => playBeep(783.99, 0.4), 200);    // G5 note
+                    display.style.color = "#00ff88"; // Winner highlight color
                 }
             }, 100);
         }
 
-        // Optional: Attempt auto-trigger when page loads, fallback to click if browser blocks audio
+        // Run instantly when the webpage finishes loading from the NFC scan
         window.addEventListener('DOMContentLoaded', () => {
-            // Some mobile browsers allow immediate clickless playback if interacting with the tag
-            document.body.addEventListener('click', () => { audioCtx.resume(); }, { once: true });
+            pickPlayer();
         });
     </script>
 
